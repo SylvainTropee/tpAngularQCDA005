@@ -1,0 +1,46 @@
+<app-carbon-footprint-form></app-carbon-footprint-form>
+<app-carbon-footprint-result></app-carbon-footprint-result>
+
+
+<section>
+  <article>
+    <p>Consommation pour 100 km : <span
+      [class.red]="consumptionPer100 > MAX_CONSUMPTION" [class.green]="consumptionPer100 < MIN_CONSUMPTION">
+      {{ consumptionPer100 }}
+    </span></p>
+    @if (consumptionPer100 > MAX_CONSUMPTION) {
+      <p>Attention votre consommation est élevée </p>
+    } @else if (consumptionPer100 < MIN_CONSUMPTION) {
+      <p>Bravo ! Votre consommation est faible !</p>
+    }
+
+    <p>Nombre de km : <span
+      [class.low-distance]="distance <= 100" [class.high-distance]="distance > 500">
+      {{ distance }}
+    </span></p>
+    <p>Consommation totale : {{ distance * consumptionPer100 / 100 | number : '1.2-2' }}</p>
+    <button (click)="add100km()">+100km</button>
+  </article>
+</section>
+
+<section>
+  <article>
+    <h2>Liste des voyages</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Distance</th>
+        <th>Consommation pour 100 kms</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (travel of travels; track $index) {
+          <tr>
+            <td>{{ travel.distance }} km</td>
+            <td>{{ travel.consumptionPer100 }} L</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+</section>
