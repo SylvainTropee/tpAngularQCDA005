@@ -6,7 +6,7 @@
   <article>
     <p>Consommation pour 100 km : <span
       [class.red]="consumptionPer100 > MAX_CONSUMPTION" [class.green]="consumptionPer100 < MIN_CONSUMPTION">
-      {{ consumptionPer100 }}
+      {{ consumptionPer100 | number : '1.2-2' }}
     </span></p>
     @if (consumptionPer100 > MAX_CONSUMPTION) {
       <p>Attention votre consommation est élevée </p>
@@ -26,6 +26,7 @@
 <section>
   <article>
     <h2>Liste des voyages</h2>
+    <button (click)="addTravel()">Ajouter voyage</button>
     <table>
       <thead>
       <tr>
