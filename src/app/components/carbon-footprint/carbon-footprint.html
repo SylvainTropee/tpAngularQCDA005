@@ -19,6 +19,7 @@
       {{ distance }}
     </span></p>
     <p>Consommation totale : {{ distance * consumptionPer100 / 100 | number : '1.2-2' }}</p>
+    <p>Quantité Co2: {{ quantityCo2 | number : '1.2-2' }}</p>
     <button (click)="add100km()">+100km</button>
   </article>
 </section>
@@ -32,6 +33,7 @@
       <tr>
         <th>Distance</th>
         <th>Consommation pour 100 kms</th>
+        <th>Co2</th>
       </tr>
       </thead>
       <tbody>
@@ -39,6 +41,7 @@
           <tr>
             <td>{{ travel.distance }} km</td>
             <td>{{ travel.consumptionPer100 }} L</td>
+            <td>{{ travel.quantityCo2 | number : '1.2-2'  }} Kg de Co2</td>
           </tr>
         }
       </tbody>
