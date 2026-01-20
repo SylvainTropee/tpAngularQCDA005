@@ -1,0 +1,8 @@
+<nav>
+  <ul>
+    <li><a [routerLink]="['']" routerLinkActive="active" [routerLinkActiveOptions]="{exact : true}">Accueil</a></li>
+    <li><a routerLink="/summary" routerLinkActive="active">Résumé</a></li>
+    <li><a routerLink="/profile/{{ username() }}" routerLinkActive="active">Profil</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</nav>
