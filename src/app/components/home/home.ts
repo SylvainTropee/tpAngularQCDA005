@@ -1,14 +1,20 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {Auth} from '../../services/auth';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [
+    FormsModule
+  ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
+  userLogin: string = ""
+  password: string = ""
+  errors : string[] = []
 
   constructor(private router: Router, private auth : Auth) {
   }
@@ -18,7 +24,21 @@ export class Home {
   }
 
   login() {
-    this.auth.login('Raymond')
-    this.goToSummary()
+
+    this.errors = [];
+
+    if(this.userLogin.trim().length < 3){
+      this.errors.push("Minimum 3 caratères !")
+    }
+
+    if(this.password.trim().length < 6){
+      this.errors.push("Minimum 6 caratères !")
+    }
+
+    if(this.errors.length == 0){
+      this.auth.login(this.userLogin)
+      this.goToSummary()
+    }
+
   }
 }

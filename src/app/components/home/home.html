@@ -1,3 +1,15 @@
 <h1>Bienvenue sur le site de l'empreinte carbone !</h1>
-<button (click)="goToSummary()">Accéder au résumé des mes voyages</button>
-<button (click)="login()">Login</button>
+
+<form>
+  <label for="login">Identifiant</label>
+  <input type="text" id="login" [(ngModel)]="userLogin" name="login">
+  <label for="password">Mot de passe</label>
+  <input type="password" id="password" [(ngModel)]="password" name="password">
+  @for (error of errors; track $index) {
+    <div class="red">{{ error }}</div>
+  }
+
+  <button (click)="login()">Login</button>
+</form>
+<!--<button (click)="goToSummary()">Accéder au résumé des mes voyages</button>-->
+

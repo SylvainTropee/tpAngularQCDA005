@@ -1,1 +1,41 @@
-<p>carbon-footprint-form works!</p>
+<form [formGroup]="travelForm" (ngSubmit)="onTravelSubmit()">
+
+  <label for="travelType">Transport</label>
+  <select name="travelType" id="travelType" formControlName="travelType">
+    <option value="car">Voiture</option>
+    <option value="train">Train</option>
+    <option value="plane">Avion</option>
+  </select>
+
+  <label for="distance">Distance</label>
+  <input type="number" name="distance" id="distance" formControlName="distance">
+  @if (travelForm.get('distance')?.dirty || travelForm.get('distance')?.touched) {
+    @if (travelForm.get('distance')?.hasError('required')) {
+      <div class="red">La distance est obligatoire !</div>
+    }
+    @if (travelForm.get('distance')?.hasError('min')) {
+      <div class="red">La distance doit être positive !</div>
+    }
+  }
+  @if (travelForm.get('travelType')?.value == 'car') {
+    <label for="consumption">Consommation</label>
+    <input type="number" name="consumption" id="consumption" formControlName="consumption">
+    @if (travelForm.get('consumption')?.dirty || travelForm.get('consumption')?.touched) {
+      @if (travelForm.get('consumption')?.hasError('required')) {
+        <div class="red">La consommation est obligatoire !</div>
+      }
+      @if (travelForm.get('consumption')?.hasError('min')) {
+        <div class="red">La consommation doit être positive !</div>
+      }
+    }
+  }
+  <label for="date">Date</label>
+  <input type="date" name="date" id="date" formControlName="date">
+  @if (travelForm.get('date')?.dirty || travelForm.get('date')?.touched) {
+    @if (travelForm.get('date')?.hasError('required')) {
+      <div class="red">La date est obligatoire !</div>
+    }
+  }
+
+  <button type="submit">Ajouter</button>
+</form>
