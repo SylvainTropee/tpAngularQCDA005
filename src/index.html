@@ -8,7 +8,8 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico"><link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
->
+
+  >
 
 </head>
 <body>
@@ -16,5 +17,28 @@
   <app-root></app-root>
 </div>
 
+
+<script>
+
+  function User(name){
+    this.name = name;
+    this.display = function (){
+      console.log(`Son nom est ${this.name}`)
+    }
+  }
+
+  const user = new User('Raymond')
+  const user2 = new User('Chantal')
+
+  user.age = 45
+
+  User.prototype.age = 78
+
+  console.log(user.age)
+  console.log(user)
+  console.log(user2.age)
+
+
+</script>
 </body>
 </html>
