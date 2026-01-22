@@ -41,11 +41,8 @@ export class CarbonFootprintForm {
   onTravelSubmit() {
     if (this.travelForm.valid) {
       const value = this.travelForm.value
-
-      console.log(value)
-      const quantityCo2 = this.cfc.getQuantityCo2ByTravel(value.distance, value.consumption, value.travelType)
       this.cfc.addTravel(
-        {distance: value.distance, consumptionPer100: value.consumption, quantityCo2: quantityCo2}
+        {distance: value.distance, consumptionPer100: value.consumption, travelType: value.travelType}
       )
     } else {
       this.travelForm.markAllAsTouched()

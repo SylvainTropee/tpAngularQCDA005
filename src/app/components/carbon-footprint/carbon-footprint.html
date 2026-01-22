@@ -6,7 +6,7 @@
   <article>
     <p>Consommation pour 100 km : <span
       [class.red]="consumptionPer100 > MAX_CONSUMPTION" [class.green]="consumptionPer100 < MIN_CONSUMPTION">
-      {{ consumptionPer100 | number : '1.2-2' }}
+      {{ resumeTravels().consumptionPer100 | number : '1.2-2' }}
     </span></p>
     @if (consumptionPer100 > MAX_CONSUMPTION) {
       <p>Attention votre consommation est élevée </p>
@@ -37,7 +37,7 @@
       </tr>
       </thead>
       <tbody>
-        @for (travel of travels; track $index) {
+        @for (travel of travels(); track $index) {
           <tr>
             <td>{{ travel.distance }} km</td>
 

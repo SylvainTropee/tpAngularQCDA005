@@ -1,56 +1,125 @@
-import {Injectable} from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {map, switchMap, tap} from 'rxjs';
+import {Travel, TravelType} from '../models/travel';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CarbonFootprintCompute {
 
-  private travels: { distance: number, consumptionPer100: number, quantityCo2: number }[]
+  private _travels = signal<Travel[]>([])
+  public readonly travels = this._travels.asReadonly()
 
-  constructor() {
-    this.travels = [
-      {distance: 50, consumptionPer100: 5, quantityCo2: 3},
-      {distance: 150, consumptionPer100: 6, quantityCo2: 4},
-      {distance: 250, consumptionPer100: 7, quantityCo2: 10},
-      {distance: 350, consumptionPer100: 8, quantityCo2: 2},
-      {distance: 450, consumptionPer100: 9, quantityCo2: 1.5}
-    ];
+  public readonly resumeTravels = computed(
+    () => this.getResumeTravels()
+  )
+
+  private readonly BASE_URL = "http://localhost:8080"
+
+  constructor(private http: HttpClient) {
+
   }
 
   getTravels() {
-    return this.travels
+    this.http.get<any[]>(`${this.BASE_URL}/tousMesVoyages/1`).pipe(
+      map(
+        response => {
+          const travels = response.map(
+            item => {
+              const travel: Travel = {
+                distance: item.distance,
+                consumptionPer100: item.consommation,
+                travelType: item.travelType,
+                quantityCo2: item.co2
+              }
+              return travel;
+            }
+          )
+          this._travels.set(travels)
+        }
+      )
+    ).subscribe()
   }
 
-  addTravel(travel: any) {
-    this.travels.push(travel)
+  addTravel(travel: Travel) {
+    this.getQuantityCo2ByTravel(travel).pipe(
+      switchMap(
+        (co2: number) => {
+          const data = {
+            userId: 1,
+            distance: travel.distance,
+            consommation: travel.consumptionPer100 ?? 0,
+            co2: co2,
+            travelType: travel.travelType
+          }
+          return this.http.post(`${this.BASE_URL}/ajouterUnVoyage`, data)
+        }
+      )
+    ).subscribe(
+      () => {
+        this.getTravels()
+      }
+    )
   }
 
-  getQuantityCo2ByTravel(distance: number, consumptionPer100: number | null, travelType: string) {
-    switch (travelType) {
-      case 'plane':
-        return distance * 0.2;
-      case 'train' :
-        return distance * 0.03;
+  getQuantityCo2ByTravel(travel: Travel) {
+    switch (travel.travelType) {
+      case TravelType.PLANE:
+        return this.getQuantityCo2ByPlane(travel)
+      case TravelType.TRAIN :
+        return this.getQuantityCo2ByTrain(travel)
       default:
-        return distance * consumptionPer100! / 100 * 2.3;
+        return this.getQuantityCo2ByCar(travel)
     }
+  }
+
+  getQuantityCo2ByCar(travel: Travel) {
+    const params = new HttpParams()
+      .set('consommationPour100Km', travel.consumptionPer100)
+      .set('distanceKm', travel.distance)
+    return this.http.get<{ empreinteCarbone: number }>(`${this.BASE_URL}/calculerTrajetVoiture`, {params: params}).pipe(
+      map(
+        response => response.empreinteCarbone
+      )
+    )
+  }
+
+  getQuantityCo2ByTrain(travel: Travel) {
+    const params = new HttpParams()
+      .set('distanceKm', travel.distance)
+    return this.http.get<{ empreinteCarbone: number }>(`${this.BASE_URL}/calculerTrajetTrain`, {params: params}).pipe(
+      map(
+        response => response.empreinteCarbone
+      )
+    )
+  }
+
+  getQuantityCo2ByPlane(travel: Travel) {
+    const params = new HttpParams()
+      .set('distanceKm', travel.distance)
+    return this.http.get<{ empreinteCarbone: number }>(`${this.BASE_URL}/calculerTrajetAvion`, {params: params}).pipe(
+      map(
+        response => response.empreinteCarbone
+      )
+    )
   }
 
   getResumeTravels() {
 
-    const distance = this.travels.reduce(
+    const distance = this.travels().reduce(
       (acc, travel) => {
         return acc + travel.distance;
       }, 0)
 
-    const consumptionPer100 = this.travels.reduce(
+    const consumptionPer100 = this.travels().reduce(
       (acc, travel) => {
         return acc + travel.consumptionPer100;
-      }, 0) / this.travels.length;
+      }, 0) / this.travels().length;
 
-    const quantityCo2 = this.travels.reduce(
+    const quantityCo2 = this.travels().reduce(
       (acc, travel) => {
-        return acc + travel.quantityCo2;
+        return acc + (travel.quantityCo2 ?? 0);
       }, 0)
 
     return {
